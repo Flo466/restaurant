@@ -42,7 +42,7 @@ final class SecurityController extends AbstractController
     }
 
     #[Route('/login', name: 'login', methods: ['POST'])]
-    public function login(?User $user): JsonResponse
+    public function login(#[CurrentUser] ?User $user): JsonResponse
     {
         if (null === $user) {
             return new JsonResponse(['message' => 'missing credentials'], Response::HTTP_UNAUTHORIZED);
@@ -54,4 +54,6 @@ final class SecurityController extends AbstractController
             'roles' => $user->getRoles(),
         ]);
     }
+
+    
 }
