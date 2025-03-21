@@ -21,6 +21,8 @@ security:
             json_login:
                 # api_login is a route we will create below
                 check_path: app_api_login
+            pattern: ^/(?!api/(registration|login)).*
+
     access_control:
         - { path: ^/api/registration, roles: PUBLIC_ACCESS }
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
