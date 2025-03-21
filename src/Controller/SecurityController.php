@@ -55,5 +55,19 @@ final class SecurityController extends AbstractController
         ]);
     }
 
-    
+    #[Route('/me', name: 'me', methods: ['GET'])]
+    public function me(#[CurrentUser] ?User $user): JsonResponse
+    {
+        if (null === $user) {
+            return new JsonResponse(['message' => 'missing credentials'], Response::HTTP_UNAUTHORIZED);
+        }
+        
+        $responseData = $this->serializer->serialize($user, format:'json');
+
+        return new JsonResponse(
+            data: $responseData,
+            status: Response::HTTP_CREATED,
+            json: true
+        );
+    }
 }

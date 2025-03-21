@@ -13,15 +13,6 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
-        public:
-            pattern: ^/api/(login|registration)
-            stateless: true
-            security: false
-            json_login:
-                check_path: app_api_login
-                username_path: email
-                password_path: password
-                provider: app_user_provider
         main:
             lazy: true
             stateless: true
@@ -29,6 +20,7 @@ security:
             custom_authenticator: App\Security\ApiTokenAuthenticator
             json_login:
                 # api_login is a route we will create below
+                check_path: app_api_login
     access_control:
         - { path: ^/api/registration, roles: PUBLIC_ACCESS }
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
