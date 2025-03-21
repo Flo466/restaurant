@@ -13,6 +13,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 
 #[Route('/api', name: 'app_api')]
 final class SecurityController extends AbstractController
@@ -62,12 +63,32 @@ final class SecurityController extends AbstractController
             return new JsonResponse(['message' => 'missing credentials'], Response::HTTP_UNAUTHORIZED);
         }
         
-        $responseData = $this->serializer->serialize($user, format:'json');
+        return new JsonResponse(
+            json_decode($this->serializer->serialize($user, 'json'), true),
+            Response::HTTP_OK
+        );
+    }
+
+    #[Route('/edit', name: 'edit', methods: ['PUT'])]
+    public function edit(#[CurrentUser] ?User $user, Request $request): JsonResponse
+    {
+        if (null === $user) {
+            return new JsonResponse(['message' => 'missing credentials'], Response::HTTP_UNAUTHORIZED);
+        }
+
+        $user = $this->serializer->deserialize(
+            $request->getContent(),
+            User::class,
+            'json',
+            [AbstractNormalizer::OBJECT_TO_POPULATE => $user]
+        );
+
+        $user->setUpdatedAt(new DateTimeImmutable());
+        $this->manager->flush();
 
         return new JsonResponse(
-            data: $responseData,
-            status: Response::HTTP_CREATED,
-            json: true
+            json_decode($this->serializer->serialize($user, 'json'), true),
+            Response::HTTP_OK
         );
     }
 }
