@@ -33,8 +33,8 @@ final class SecurityController extends AbstractController
             content: new OA\JsonContent(
                 type: "object",
                 properties: [
-                    new OA\Property(property: "firstName", type: "string", example: "John"),
-                    new OA\Property(property: "lastName", type: "string", example: "Doe"),
+                    new OA\Property(property: "firstName", type: "string", example: "Fisrt name"),
+                    new OA\Property(property: "lastName", type: "string", example: "Last name"),
                     new OA\Property(property: "email", type: "string", example: "adresse@email.com"),
                     new OA\Property(property: "password", type: "string", example: "Mot de passe")
                 ],
