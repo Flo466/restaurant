@@ -136,6 +136,46 @@ final class RestaurantController extends AbstractController
     }
 
     #[Route('/{id}', name: 'edit', methods: ['PUT'])]
+    #[OA\Put(
+        path: "/api/restaurant/{id}",
+        summary: "Edit a restaurant",
+        requestBody: new OA\RequestBody(
+            required: true,
+            description: "Restaurant data required for edition",
+            content: new OA\JsonContent(
+                type: "object",
+                properties: [
+                    new OA\Property(property: "name", type: "string", example: "Nom du restaurant")
+                ],
+            )
+        ),
+    )]
+    #[OA\Response(
+        response: 200,
+        description: "Restaurant updated successfully",
+        content: new OA\JsonContent(
+            type: "object",
+            properties: [
+                new OA\Property(property: "id", type: "integer", example: 1),
+                new OA\Property(property: "name", type: "string", example: "Nom du restaurant"),
+                new OA\Property(property: "description", type: "string", example: "Description du restaurant"),
+                new OA\Property(property: "max_guest", type: "integer", example: 50),
+                new OA\Property(property: "createdAt", type: "string", format: "date-time"),
+                new OA\Property(property: "updatedAt", type: "string", format: "date-time"),
+            ]
+        )
+    )]
+    #[OA\Response(
+        response: 404,
+        description: "Not found"
+    )]
+    #[OA\Parameter(
+        name: 'id',
+        in: 'path',
+        required: true,
+        description: "Restaurant ID",
+        schema: new OA\Schema(type: 'integer')
+    )]
     public function edit(int $id, Request $request): JsonResponse
     {
         $restaurant = $this->repository->findOneBy(['id' => $id]);
@@ -160,7 +200,7 @@ final class RestaurantController extends AbstractController
             
             return new JsonResponse(
                 data: $responseData,
-                status: Response::HTTP_CREATED,
+                status: Response::HTTP_OK,
                 headers: ["Location" => $location],
                 json: true
             );
