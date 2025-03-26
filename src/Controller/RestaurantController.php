@@ -220,7 +220,7 @@ final class RestaurantController extends AbstractController
     )]
     #[OA\Response(
         response: 404,
-        description: "Restaurant dnot found",
+        description: "Restaurant not found",
     )]
     public function delete(int $id): JsonResponse
     {
