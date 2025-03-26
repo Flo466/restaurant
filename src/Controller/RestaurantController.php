@@ -95,7 +95,7 @@ final class RestaurantController extends AbstractController
     #[Route('/{id}', name: 'show', methods: ['GET'])]
     #[OA\Get(
         path: "/api/restaurant/{id}",
-        summary: "Display a restaurant thanks to its ID"
+        summary: "Display a restaurant by ID"
     )]
     #[OA\Response(
         response: 200,
@@ -138,7 +138,7 @@ final class RestaurantController extends AbstractController
     #[Route('/{id}', name: 'edit', methods: ['PUT'])]
     #[OA\Put(
         path: "/api/restaurant/{id}",
-        summary: "Edit a restaurant",
+        summary: "Edit a restaurant by ID",
         requestBody: new OA\RequestBody(
             required: true,
             description: "Restaurant data required for edition",
@@ -210,6 +210,18 @@ final class RestaurantController extends AbstractController
     }
 
     #[Route('/{id}', name: 'delete', methods: ['DELETE'])]
+    #[OA\Delete(
+        path: "/api/restaurant/{id}",
+        summary: "Delete a restaurant by ID"
+    )]
+    #[OA\Response(
+        response: 204,
+        description: "Restaurant deleted successfully",
+    )]
+    #[OA\Response(
+        response: 404,
+        description: "Restaurant dnot found",
+    )]
     public function delete(int $id): JsonResponse
     {
         $restaurant = $this->repository->findOneBy(['id' => $id]);
