@@ -124,6 +124,36 @@ final class SecurityController extends AbstractController
     }
 
     #[Route('/me', name: 'me', methods: ['GET'])]
+    #[OA\Get(
+        path: "/api/me",
+        summary: "Get user data"
+    )]
+    #[OA\Response(
+        response: 200,
+        description: "Data successfully found",
+        content: new OA\JsonContent(
+            type: "object",
+            properties: [
+                new OA\Property(property: "id", type: "integer", example: 1),
+                new OA\Property(property: "firstName", type: "string", example: "first name"),
+                new OA\Property(property: "lastName", type: "string", example: "last name"),
+                new OA\Property(property: "email", type: "string", example: "user@example.com"),
+                new OA\Property(property: "created_at", type: "string", format: "date-time"),
+                new OA\Property(property: "updated_at", type: "string", format: "date-time"),
+                new OA\Property(property: "api_token", type: "string", example: "abcdef1234567890"),
+            ]
+        )
+    )]
+    #[OA\Response(
+        response: 401,
+        description: "Unauthorized"
+    )]
+    #[OA\Header(
+        header: "Authorization",
+        description: "Bearer token",
+        required: true,
+        schema: new OA\Schema(type: "string")
+    )]
     public function me(#[CurrentUser] ?User $user): JsonResponse
     {
         if (null === $user) {
@@ -139,7 +169,7 @@ final class SecurityController extends AbstractController
     #[Route('/edit', name: 'edit', methods: ['PUT'])]
     #[OA\Put(
         path: "/api/edit",
-        summary: "Edit a user by ID",
+        summary: "Edit a user",
         requestBody: new OA\RequestBody(
             required: true,
             description: "User data required for edition",
@@ -158,22 +188,15 @@ final class SecurityController extends AbstractController
             type: "object",
             properties: [
                 new OA\Property(property: "id", type: "integer", example: 1),
-                new OA\Property(property: "firstName", type: "integer", example: "first name"),
-                new OA\Property(property: "lastName", type: "integer", example: "last name"),
                 new OA\Property(property: "email", type: "string", example: "user@example.com"),
+                new OA\Property(property: "firstName", type: "string", example: "first name"),
+                new OA\Property(property: "lastName", type: "string", example: "last name"),
                 new OA\Property(property: "created_at", type: "string", format: "date-time"),
                 new OA\Property(property: "updated_at", type: "string", format: "date-time"),
                 new OA\Property(property: "api_token", type: "string", example: "abcdef1234567890"),
             ]
             
         )
-    )]
-    #[OA\Parameter(
-        name: 'id',
-        in: 'path',
-        required: true,
-        description: "User ID",
-        schema: new OA\Schema(type: 'integer')
     )]
     public function edit(#[CurrentUser] ?User $user, Request $request): JsonResponse
     {
