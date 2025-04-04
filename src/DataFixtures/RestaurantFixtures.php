@@ -6,24 +6,28 @@ use App\Entity\Restaurant;
 use DateTimeImmutable;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
+use Faker;
 
 class RestaurantFixtures extends Fixture
 {
     public const RESTAURANT_REFERENCE = 'restaurant';
+    public const RESTAURANT_NB_TUPLES = 20;
 
     public function load(ObjectManager $manager): void
     {
-        for ($i = 1; $i <= 20; $i++) {
+        
+        $faker = Faker\Factory::create();
+        for ($i = 1; $i <= self::RESTAURANT_NB_TUPLES; $i++) {
             $restaurant = (new Restaurant())
-                ->setName("restaurant $i")
-                ->setDescription("description restaurant n°$i")
+                ->setName($faker->company())
+                ->setDescription($faker->text())
                 ->setAmOpeningTime([])
                 ->setPmOpeningTime([])
                 ->setMaxGuest(random_int(10, 50))
                 ->setCreatedAt(new DateTimeImmutable());
 
             $manager->persist($restaurant);
-            $this->addReference("restaurant$i", $restaurant);
+            $this->addReference(self::RESTAURANT_REFERENCE . $i, $restaurant);
         }
 
         $manager->flush();
