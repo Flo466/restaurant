@@ -21,4 +21,5 @@ class SmokeTest extends WebTestCase
         self::assertResponseStatusCodeSame('401');
         
     }
+
 }
