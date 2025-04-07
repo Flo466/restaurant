@@ -1,4 +1,3 @@
-services:
-  database:
+database:
     type: mysql:8.0
     disk: 512
