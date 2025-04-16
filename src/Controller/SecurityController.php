@@ -85,20 +85,20 @@ final class SecurityController extends AbstractController
         summary: "Logging in a user",
         requestBody: new OA\RequestBody(
             required: true,
-            description: "User data required for logging in",
+            description: "User credentials for login",
             content: new OA\JsonContent(
                 type: "object",
                 properties: [
                     new OA\Property(property: "email", type: "string", example: "adresse@email.com"),
                     new OA\Property(property: "password", type: "string", example: "Mot de passe")
                 ],
-                required: ["email", "password", "firstName", "lastName"],
+                required: ["email", "password"]
             )
         ),
         responses: [
             new OA\Response(
-                response: 201,
-                description: "User successfully connected",
+                response: 200,
+                description: "User successfully logged in",
                 content: new OA\JsonContent(
                     type: "object",
                     properties: [
@@ -107,20 +107,38 @@ final class SecurityController extends AbstractController
                         new OA\Property(property: "roles", type: "array", items: new OA\Items(type: "string", example: "ROLE_USER")),
                     ]
                 )
+            ),
+            new OA\Response(
+                response: 401,
+                description: "Invalid credentials"
+            ),
+            new OA\Response(
+                response: 400,
+                description: "Missing email or password"
             )
         ]
     )]
-    public function login(#[CurrentUser] ?User $user): JsonResponse
+    public function login(Request $request, UserPasswordHasherInterface $hasher): JsonResponse
     {
-        if (null === $user) {
-            return new JsonResponse(['message' => 'missing credentials'], Response::HTTP_UNAUTHORIZED);
+        $data = json_decode($request->getContent(), true);
+        $email = $data['email'] ?? null;
+        $password = $data['password'] ?? null;
+
+        if (!$email || !$password) {
+            return new JsonResponse(['message' => 'Email et mot de passe requis'], Response::HTTP_BAD_REQUEST);
         }
-        
+
+        $user = $this->manager->getRepository(User::class)->findOneBy(['email' => $email]);
+
+        if (!$user || !$hasher->isPasswordValid($user, $password)) {
+            return new JsonResponse(['message' => 'Identifiants invalides'], Response::HTTP_UNAUTHORIZED);
+        }
+
         return new JsonResponse([
             'user' => $user->getUserIdentifier(),
             'apiToken' => $user->getApiToken(),
             'roles' => $user->getRoles(),
-        ]);
+        ], Response::HTTP_OK);
     }
 
     #[Route('/me', name: 'me', methods: ['GET'])]
